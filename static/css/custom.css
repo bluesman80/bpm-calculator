@@ -1,6 +1,6 @@
 /* Dark mode image handling */
 [data-bs-theme="dark"] h1 img {
-    background: #000;
+    background: #212529;
     border-radius: 8px;
 }
 
