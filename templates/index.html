@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#212529">
+    <title>BPM Calculator voor Omgebouwde Campers</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/custom.css') }}" rel="stylesheet">
+</head>
+<body>
+<div class="theme-switch-wrapper">
+    <span><i class="bi bi-moon-stars-fill"></i></span>
+    <label class="theme-switch">
+        <input type="checkbox" id="themeToggle">
+        <div class="slider round"></div>
+    </label>
+    <span><i class="bi bi-sun-fill"></i></span>
+</div>
+<div class="container py-4">
+    <h1 class="mb-4">BPM Calculator voor Omgebouwde Campers</h1>
+
+    <div class="card">
+        <div class="card-body">
+            <form id="bpmForm" class="needs-validation" novalidate>
+                <div class="mb-3">
+                    <label class="form-label">Hoe wilt u de voertuiggegevens invoeren?</label>
+                    <div class="form-text mb-2">
+                        U kunt kiezen om het kenteken in te voeren waarna wij de gegevens ophalen, of u kunt de
+                        cataloguswaarde zelf invullen.
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="invoermethode" id="kentekenMethode"
+                               value="kenteken" checked>
+                        <label class="form-check-label" for="kentekenMethode">
+                            Automatisch via kenteken
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="invoermethode" id="handmatigMethode"
+                               value="handmatig">
+                        <label class="form-check-label" for="handmatigMethode">
+                            Zelf cataloguswaarde invullen
+                        </label>
+                    </div>
+                </div>
+
+                <div id="kentekenSection" class="collapse show">
+                    <div class="mb-3">
+                        <label for="kenteken" class="form-label">Kenteken (zonder strepjes)</label>
+                        <div class="position-relative">
+                            <input type="text" class="form-control" id="kenteken" pattern="^[A-Za-z0-9]{6}$"
+                                   maxlength="6">
+                        </div>
+                        <div class="invalid-feedback">
+                            Voer een geldig kenteken in (6 alfanumerieke tekens)
+                        </div>
+                    </div>
+                </div>
+
+                <div id="handmatigSection" class="collapse">
+                    <div class="mb-3">
+                        <label for="cataloguswaarde" class="form-label">Totale Cataloguswaarde (€)</label>
+                        <input type="number" class="form-control" id="cataloguswaarde" min="0" step="0.01">
+                        <div class="invalid-feedback">
+                            Voer een geldige cataloguswaarde in
+                        </div>
+                    </div>
+                </div>
+
+                <div id="brandstofSection" class="collapse">
+                    <label class="form-label">Brandstoftype</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="brandstof" id="diesel" value="diesel"
+                               required>
+                        <label class="form-check-label" for="diesel">Diesel</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="brandstof" id="benzine" value="benzine"
+                               required>
+                        <label class="form-check-label" for="benzine">Benzine</label>
+                    </div>
+                    <div class="invalid-feedback">
+                        Selecteer een brandstoftype
+                    </div>
+                    <div class="form-text">
+                        De bruto BPM wordt aangepast op basis van het brandstoftype:
+                        <ul class="list-unstyled mt-1">
+                            <li><i class="bi bi-dot"></i> Diesel: +€237</li>
+                            <li><i class="bi bi-dot"></i> Benzine: -€1.283</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="afschrijving" class="form-label">Afschrijvingspercentage (%)</label>
+                    <input type="number" class="form-control" id="afschrijving" required min="0" max="100" step="0.01">
+                    <div class="invalid-feedback">
+                        Voer een geldig afschrijvingspercentage in (0-100)
+                    </div>
+                    <div class="form-text">
+                        Het afschrijvingspercentage kunt u berekenen met behulp van de forfaitaire tabel van de
+                        Belastingdienst.
+                        <a href="https://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/belastingdienst/prive/auto_en_vervoer/belastingen_op_auto_en_motor/bpm/afschrijving_met_koerslijst_taxatierapport_of_forfaitaire_tabel/afschrijving_met_forfaitaire_tabel"
+                           target="_blank"
+                           class="link-info">
+                            Bekijk de tabel hier <i class="bi bi-box-arrow-up-right"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="button-group">
+                    <button type="submit" class="btn btn-primary" id="submitButton">
+                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                        <span class="button-text">Bereken BPM</span>
+                    </button>
+                    <button type="reset" class="btn btn-secondary">Nieuwe Berekening</button>
+                </div>
+            </form>
+
+            <div id="resultaat" class="mt-4" style="display: none;">
+                <h3>Berekening Resultaten</h3>
+                <table class="table">
+                    <tbody>
+                    <tr>
+                        <td>Netto Cataloguswaarde:</td>
+                        <td id="nettoCataloguswaarde">-</td>
+                    </tr>
+                    <tr>
+                        <td>Bruto BPM:</td>
+                        <td id="brutoBPM">-</td>
+                    </tr>
+                    <tr>
+                        <td>Verhoogde/Verminderde Bedrag:</td>
+                        <td id="verhoogdBedrag">-</td>
+                    </tr>
+                    <tr>
+                        <td>Te Betalen BPM:</td>
+                        <td id="teBetalen">-</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div id="berekeningDetails" class="alert alert-info mt-3">
+                    <h5>Hoe wordt de BPM berekend?</h5>
+                    <p>De berekening gebeurt in 4 stappen:</p>
+                    <ol>
+                        <li>We bepalen eerst de netto cataloguswaarde van het voertuig (zonder BTW en BPM):
+                            <div class="alert alert-secondary mt-2">
+                                Netto = Cataloguswaarde ÷ (1 + 0,21 + 0,377)
+                            </div>
+                        </li>
+                        <li>De basis BPM wordt berekend als 37,7% van de netto cataloguswaarde:
+                            <div class="alert alert-secondary mt-2">
+                                Basis BPM = Netto × 0,377
+                            </div>
+                        </li>
+                        <li>Er wordt een aanpassing gedaan op basis van brandstoftype:
+                            <div class="alert alert-secondary mt-2">
+                                Diesel: Basis BPM + €237<br>
+                                Benzine: Basis BPM - €1.283
+                            </div>
+                        </li>
+                        <li>Tot slot passen we het afschrijvingspercentage toe:
+                            <div class="alert alert-secondary mt-2">
+                                Te betalen = BPM - (BPM × Afschrijving%)
+                            </div>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ url_for('static', filename='js/calculator.js') }}"></script>
+
+</body>
+</html>
