@@ -1,3 +1,14 @@
+/* Dark mode image handling */
+[data-bs-theme="dark"] h1 img {
+    background: #000;
+    border-radius: 8px;
+}
+
+[data-bs-theme="light"] h1 img {
+    background: #fff;
+    border-radius: 8px;
+}
+
 /* Theme switch styles */
 .theme-switch-wrapper {
     position: fixed;
