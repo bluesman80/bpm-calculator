@@ -173,3 +173,4 @@ cython_debug/
 # Replit configuration files
 .replit
 replit*
+/poetry.lock
