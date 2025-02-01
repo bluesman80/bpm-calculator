@@ -2,6 +2,9 @@ import os
 from flask import Flask, render_template, request, jsonify
 import logging
 import requests
+from dotenv import load_dotenv
+# loading variables from .env file
+load_dotenv()
 
 # Setup logging
 logging.basicConfig(level=logging.DEBUG)
