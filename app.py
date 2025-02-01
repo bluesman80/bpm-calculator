@@ -5,7 +5,7 @@ import requests
 
 # Setup logging
 logging.basicConfig(level=logging.DEBUG)
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/static')
 app.secret_key = os.getenv("FLASK_SECRET_KEY") or "een_geheime_sleutel"
 
 bpm_percentage = 0.377
