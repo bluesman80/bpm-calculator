@@ -3,6 +3,8 @@ from flask import Flask, render_template, request, jsonify
 import logging
 import requests
 from dotenv import load_dotenv
+from werkzeug.middleware.proxy_fix import ProxyFix
+
 # loading variables from .env file
 load_dotenv()
 
@@ -10,6 +12,7 @@ load_dotenv()
 logging.basicConfig(level=logging.DEBUG)
 app = Flask(__name__, static_url_path='/static')
 app.secret_key = os.getenv("FLASK_SECRET_KEY") or "een_geheime_sleutel"
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
 
 bpm_percentage = 0.377
 btw_percentage = 0.21
